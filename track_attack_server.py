@@ -144,7 +144,7 @@ try:
 							conn.sendall(str.encode("\n".join(["invalid","invalid","invalid"])))
 					else:
 						print("BAD SECRET")
-						conn.sendall(str.encode("\n".join(["bad secret"])))
+						conn.sendall(str.encode("\n".join(["bad secret","bad secret","bad secret"])))
 
 except KeyboardInterrupt:
 	try:
