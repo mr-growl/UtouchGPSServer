@@ -39,23 +39,40 @@ import sys
 import socket
 import time
 
-import math as mod_math
-
-release = "0.2"
-
+#############################################
+# SOCKET SETTINGS
+# socket_address: address to listen on
+# socket_port: the port to listen on
+# socket_secret: a shared secret that clients
+#   use to prove that they are allowed to
+#   grab the location.
 socket_address = '127.0.0.1'
 socket_port = 61234
 socket_secret = b'supersneakylocation'
+#############################################
 
 
+############################################
+# SHARED VARIABLES (things used by both
+#   threads)
+#epoch time time of last locationrequest
 last_request_seconds = 0
-request_runout_seconds = 300
+#current "valid" location formatted for network
 current_location = str.encode("invalid")
+############################################
 
-debug = True
+#How long, in seconds,  to keep the GPS running after last request
+request_runout_seconds = 300
 
+#set to True to enable debug messages
+debug = False
+
+#the Socket
 s = None
 
+###########################
+# THE GPS THREAD FUNCTION
+###########################
 def read_gps():
 	global latitude
 	global longitude
@@ -79,7 +96,9 @@ def read_gps():
 
 	cmd = ['sudo test_gps']
 
+	#this is the main loop
 	while True:
+		#if we are not running, keep an eye out for requests and sleep for a second if no requests have been received
 		if running is False:
 			if int(time.time()) - last_request_seconds < request_runout_seconds:
 				if debug:
@@ -89,6 +108,7 @@ def read_gps():
 				running = True
 			else:
 				time.sleep(1)
+		#if we are running then parse the output of the test_gps command
 		if running is True:
 			for line in p.stdout:
 				line = line.decode('utf-8')
